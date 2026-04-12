@@ -3,21 +3,31 @@
 
 module Task1 where
 
--- Explicit import of Prelude to hide functions
--- that are not supposed to be used in this assignment
-import Prelude hiding (foldl, foldr, product)
+import Data.Functor.Identity
 
--- | Computes factorial of given number
---
---   n! = 1 * 2 * ... * n
---
--- Usage example:
---
--- >>> factorial 5
--- 120
---
-factorial :: Integer -> Integer
--- Stub implementation for use in actual assignment
--- factorial = error "TODO: define factorial"
-factorial 0 = 1
-factorial n = n * factorial (n - 1)
+class Applicative m => JoinMonad m where
+  {-# MINIMAL join #-}
+  join :: m (m a) -> m a
+
+infixl 1 >>=
+(>>=) :: JoinMonad m => m a -> (a -> m b) -> m b
+(>>=) = error "TODO: define (>>=) in Task1"
+
+infixr 1 >=>
+(>=>) :: JoinMonad m => (a -> m b) -> (b -> m c) -> (a -> m c)
+(>=>) = error "TODO: define (>=>) in Task1"
+
+instance JoinMonad Identity where
+  join = error "TODO: define join (JoinMonad Identity)"
+
+instance JoinMonad Maybe where
+  join = error "TODO: define join (JoinMonad Maybe)"
+
+instance JoinMonad [] where
+  join = error "TODO: define join (JoinMonad [])"
+
+instance (Monoid e) => JoinMonad ((,) e) where
+  join = error "TODO: define join (JoinMonad ((,) e))"
+
+instance JoinMonad ((->) e) where
+  join = error "TODO: define join (JoinMonad ((->) e))"

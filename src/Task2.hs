@@ -3,19 +3,31 @@
 
 module Task2 where
 
--- Explicit import of Prelude to hide functions
--- that are not supposed to be used in this assignment
-import Prelude hiding (foldl, foldr, sum)
+import Data.Functor.Identity
 
--- | Computes sum from 1 to n
---
--- Usage example:
---
--- >>> sumtorial 5
--- 16
---
-sumtorial :: Integer -> Integer
--- Stub implementation for use in actual assignment
--- factorial = error "TODO: define sumtorial"
-sumtorial 0 = 1
-sumtorial n = n + sumtorial (n - 1)
+class Applicative m => KleisliMonad m where
+  {-# MINIMAL (>=>) #-}
+  infixr 1 >=>
+  (>=>) :: (a -> m b) -> (b -> m c) -> (a -> m c)
+
+infixl 1 >>=
+(>>=) :: KleisliMonad m => m a -> (a -> m b) -> m b
+(>>=) = error "TODO: define (>>=) in Task2"
+
+join :: KleisliMonad m => m (m a) -> m a
+join = error "TODO: define join in Task2"
+
+instance KleisliMonad Identity where
+  (>=>) = error "TODO: define (>=>) (KleisliMonad Identity)"
+
+instance KleisliMonad Maybe where
+  (>=>) = error "TODO: define (>=>) (KleisliMonad Maybe)"
+
+instance KleisliMonad [] where
+  (>=>) = error "TODO: define (>=>) (KleisliMonad [])"
+
+instance (Monoid e) => KleisliMonad ((,) e) where
+  (>=>) = error "TODO: define (>=>) (KleisliMonad ((,) e))"
+
+instance KleisliMonad ((->) e) where
+  (>=>) = error "TODO: define (>=>) (KleisliMonad ((->) e))"
