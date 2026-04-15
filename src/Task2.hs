@@ -20,29 +20,34 @@ class Applicative m => KleisliMonad m where
 
 infixl 1 >>=
 (>>=) :: KleisliMonad m => m a -> (a -> m b) -> m b
-(>>=) = error "TODO: define (>>=) in Task2"
+(>>=) m f = (const m >=> f) ()
 
 join :: KleisliMonad m => m (m a) -> m a
-join = error "TODO: define join in Task2"
+join mma = mma >>= id
 
 -- * Instances
 
 instance KleisliMonad Identity where
   (>=>) :: (a -> Identity b) -> (b -> Identity c) -> (a -> Identity c)
-  (>=>) = error "TODO: define (>=>) (KleisliMonad Identity)"
+  (>=>) f g a = g (runIdentity (f a))
 
 instance KleisliMonad Maybe where
   (>=>) :: (a -> Maybe b) -> (b -> Maybe c) -> (a -> Maybe c)
-  (>=>) = error "TODO: define (>=>) (KleisliMonad Maybe)"
+  (>=>) f g a = case f a of
+    Nothing -> Nothing
+    Just b  -> g b
 
 instance KleisliMonad [] where
   (>=>) :: (a -> [b]) -> (b -> [c]) -> (a -> [c])
-  (>=>) = error "TODO: define (>=>) (KleisliMonad [])"
+  (>=>) f g a = concatMap g (f a)
 
 instance (Monoid e) => KleisliMonad ((,) e) where
   (>=>) :: Monoid e => (a -> (e, b)) -> (b -> (e, c)) -> (a -> (e, c))
-  (>=>) = error "TODO: define (>=>) (KleisliMonad ((,) e))"
+  (>=>) f g a =
+    let (e1, b) = f a
+        (e2, c) = g b
+    in (e1 <> e2, c)
 
 instance KleisliMonad ((->) e) where
   (>=>) :: (a -> e -> b) -> (b -> e -> c) -> (a -> e -> c)
-  (>=>) = error "TODO: define (>=>) (KleisliMonad ((->) e))"
+  (>=>) f g a e = g (f a e) e
